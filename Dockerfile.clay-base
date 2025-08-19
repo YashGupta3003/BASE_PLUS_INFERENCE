@@ -1,0 +1,56 @@
+# clay-base Dockerfile
+FROM python:3.11.13-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV PIP_NO_CACHE_DIR=1
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+
+# Basic system deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libgdal-dev \
+    gdal-bin \
+    libgeos-dev \
+    libproj-dev \
+    libspatialindex-dev \
+    ca-certificates \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# Install python libs (no clay-model or heavy model libs here)
+RUN pip install --no-cache-dir \
+    numpy \
+    pandas\
+    matplotlib \
+    rasterio \
+    geopandas \
+    shapely \
+    xarray \
+    rioxarray\
+    pystac_client\
+    stackstac\
+    python-box
+
+# Jupyter for notebook work
+RUN pip install --no-cache-dir \
+    jupyter \
+    notebook \
+    ipykernel \
+    ipywidgets
+
+# Create notebooks folder
+RUN mkdir -p /workspace/notebooks
+
+# Jupyter config
+RUN jupyter notebook --generate-config && \
+    echo "c.NotebookApp.ip = '0.0.0.0'" >> ~/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.allow_root = True" >> ~/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.open_browser = False" >> ~/.jupyter/jupyter_notebook_config.py
+
+EXPOSE 8888
+
+WORKDIR /workspace
+
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
