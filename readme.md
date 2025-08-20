@@ -32,7 +32,7 @@ base_plus_inference/
 
 ### Step 1: Clone This Repository
 ```bash
-git clone <your-repo-url> base_plus_inference
+git clone https://github.com/YashGupta3003/BASE_PLUS_INFERENCE.git base_plus_inference
 cd base_plus_inference
 ```
 
