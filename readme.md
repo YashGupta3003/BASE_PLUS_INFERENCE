@@ -63,11 +63,14 @@ docker build -f Dockerfile.clay-infer -t clay-infer .
 docker run -it \
   -p 8888:8888 \
   -v $(pwd):/workspace \
-  --name clay-basic-container \
   clay-base
 ```
 
-**Access Jupyter at**: `http://localhost:8888`
+**Access Jupyter**: After running the container, look in the terminal for a link like:
+```
+http://127.0.0.1:8888/tree?token=32e5e84ee48b1b95..........6
+```
+Copy this link and paste it in your browser to access the Jupyter server and run notebooks.
 
 ### Option 2: Inference Container (Model Inference)
 ```bash
@@ -75,11 +78,14 @@ docker run -it \
   -p 8889:8888 \
   -v $(pwd):/workspace \
   -v $(pwd)/clay-model:/workspace/clay-model \
-  --name clay-infer-container \
   clay-infer
 ```
 
-**Access Jupyter at**: `http://localhost:8889`
+**Access Jupyter**: After running the container, look in the terminal for a link like:
+```
+http://127.0.0.1:8889/tree?token=32e5e84ee48b1b95...........6
+```
+Copy this link and paste it in your browser to access the Jupyter server and run notebooks.
 
 ## WSL2 Setup for Windows Users
 
@@ -115,10 +121,12 @@ docker build -f Dockerfile.clay-infer -t clay-infer .
 git clone https://github.com/Clay-foundation/model.git clay-model
 
 # Run containers
-docker run -it -p 8888:8888 -v $(pwd):/workspace --name clay-basic-container clay-base
+docker run -it -p 8888:8888 -v $(pwd):/workspace clay-base
 
 # In another terminal
-docker run -it -p 8889:8888 -v $(pwd):/workspace -v $(pwd)/clay-model:/workspace/clay-model --name clay-infer-container clay-infer
+docker run -it -p 8888:8888 -v $(pwd):/workspace -v $(pwd)/clay-model:/workspace/clay-model clay-infer
+
+**Note**: After running each container, look in the terminal for a Jupyter link with a token. Copy and paste this link in your browser to access the Jupyter server.
 ```
 
 ## How It Works
@@ -154,8 +162,8 @@ docker run -it -p 8889:8888 -v $(pwd):/workspace -v $(pwd)/clay-model:/workspace
 docker ps
 
 # Stop and remove conflicting containers
-docker stop <container-name>
-docker rm <container-name>
+docker stop <container-id>
+docker rm <container-id>
 ```
 
 ### Permission Issues (WSL2)
@@ -167,7 +175,7 @@ docker rm <container-name>
 ### Container Exits Immediately
 ```bash
 # Check container logs
-docker logs <container-name>
+docker logs <container-id>
 
 # Ensure clay-model directory exists and is properly mounted
 ls -la clay-model/
