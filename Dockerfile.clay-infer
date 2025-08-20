@@ -4,24 +4,17 @@ FROM clay-base
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 
-# Install git (not present in clay-base)
+# Optional: git (useful if the mounted repo has submodules)
 RUN apt-get update && apt-get install -y --no-install-recommends git && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install PyTorch (CPU version here for inference)
+# Pre-bake Clay model dependencies into the image by installing the repo
+# (this brings in its requirements so runtime containers stay lightweight).
+# At runtime, a mounted local clay-model will be installed in editable mode to override.
 RUN pip install --no-cache-dir \
-    torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu \
-    torchvision==0.15.2 --index-url https://download.pytorch.org/whl/cpu
+    git+https://github.com/Clay-foundation/model.git
 
 WORKDIR /workspace
 
-# Clone Clay Model repo
-RUN git clone --depth 1 https://github.com/Clay-foundation/model.git clay-model
-
-# Install Clay model and heavy inference deps
-WORKDIR /workspace/clay-model
-RUN pip install --no-cache-dir git+https://github.com/Clay-foundation/model.git
-
-WORKDIR /workspace
-
-CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+# On container start, if /workspace/clay-model is mounted, install it in editable mode (without deps), then launch Jupyter
+CMD ["sh","-c","if [ -d /workspace/clay-model ]; then python -m pip install -e /workspace/clay-model --no-deps; fi; exec jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root"]

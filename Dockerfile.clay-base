@@ -31,7 +31,9 @@ RUN pip install --no-cache-dir \
     rioxarray\
     pystac_client\
     stackstac\
-    python-box
+    python-box\
+    scikit-learn
+
 
 # Jupyter for notebook work
 RUN pip install --no-cache-dir \
