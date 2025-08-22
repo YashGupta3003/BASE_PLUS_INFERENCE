@@ -25,7 +25,7 @@ base_plus_inference/
 │   └── ... (Clay model source code)
 ├── data/                         # Your datasets (create this folder)
 │   └── (geoTIFFs or other data files)
-└── base_plus_inference.md        # This file
+└── readme.md        # This file
 ```
 
 ## Setup Instructions
